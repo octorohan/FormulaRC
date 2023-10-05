@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
 #include <WiFi.h>
-#include <WebSocketsServer.h>
 #include <WebServer.h>
+#include <WebSocketsServer.h>
 
 #include "page.h"
 
@@ -39,26 +39,26 @@ void setBw()
 
 void move()
 {
-    analogWrite(el, speed);
-    analogWrite(er, speed);
+    ledcWrite(0, speed);
+    ledcWrite(1, speed);
 }
 
 void right()
 {
-    digitalWrite(el, 0);
-    analogWrite(er, speed);
+    ledcWrite(1, 0);
+    ledcWrite(0, speed);
 }
 
 void left()
 {
-    digitalWrite(er, 0);
-    analogWrite(el, speed);
+    ledcWrite(0, 0);
+    ledcWrite(1, speed);
 }
 
 void stop()
 {
-    digitalWrite(el, 0);
-    digitalWrite(er, 0);
+    ledcWrite(0, 0);
+    ledcWrite(1, 0);
 }
 
 void handler(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
@@ -72,12 +72,13 @@ void handler(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         byte s = r % 10;
         signed char t = r / 10 - 10;
 
-
         speed = 25.5 * t;
         move();
 
-        if (s == 2) right();
-        else if (s == 0) left();
+        if (s == 2)
+            right();
+        else if (s == 0)
+            left();
 
         if (t > 0)
         {
@@ -117,10 +118,14 @@ void setup()
 
     Serial.println(WiFi.softAPIP());
 
-    pinMode(el, OUTPUT);
+    ledcSetup(0, 5000, 8);
+    ledcSetup(1, 5000, 8);
+
+    ledcAttachPin(el, 0);
+    ledcAttachPin(er, 1);
+
     pinMode(l1, OUTPUT);
     pinMode(l2, OUTPUT);
-    pinMode(er, OUTPUT);
     pinMode(r1, OUTPUT);
     pinMode(r2, OUTPUT);
 
