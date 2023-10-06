@@ -169,11 +169,8 @@ byte l2 = 4;
 byte r1 = 18;
 byte r2 = 19;
 
-// int speed = 0;
 
-bool fb = 0;
-
-void movefw()
+void fw()
 {
     digitalWrite(l1, 1);
     digitalWrite(l2, 0);
@@ -181,7 +178,7 @@ void movefw()
     digitalWrite(r2, 0);
 }
 
-void movebw()
+void bw()
 {
     digitalWrite(l1, 0);
     digitalWrite(l2, 1);
@@ -190,14 +187,34 @@ void movebw()
 }
 
 
-void right()
+void rfw()
 {
     digitalWrite(l1, 0);
     digitalWrite(l2, 0);
+    digitalWrite(r1, 0);
+    digitalWrite(r2, 1);
 }
 
-void left()
+void lfw()
 {
+    digitalWrite(l1, 0);
+    digitalWrite(l2, 1);
+    digitalWrite(r1, 0);
+    digitalWrite(r2, 0);
+}
+
+void rbw()
+{
+    digitalWrite(l1, 0);
+    digitalWrite(l2, 0);
+    digitalWrite(r1, 1);
+    digitalWrite(r2, 0);
+}
+
+void lbw()
+{
+    digitalWrite(l1, 1);
+    digitalWrite(l2, 0);
     digitalWrite(r1, 0);
     digitalWrite(r2, 0);
 }
@@ -215,34 +232,32 @@ void handler(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     switch (type)
     {
     case WStype_BIN:
-    {
-        byte r = payload[0];
-
-        switch(r) {
+        switch(payload[0]) {
+            case 33:
+                lfw();
+                break;
+            case 34:
+                fw();
+                break;
+            case 35:
+                rfw();
+                break;
             case 13:
+                lbw();
                 break;
             case 14:
+                bw();
                 break;
             case 15:
+                rbw();
                 break;
             case 23:
             case 24:
             case 25:
                 stop();
                 break;
-            case 33:
-                break;
-            case 34:
-                break;
-            case 35:
-                break;
         }
-
-        // Serial.print(s);
-        // Serial.print(" ");
-        // Serial.println(t);
         break;
-    }
     case WStype_DISCONNECTED:
         stop();
         break;
